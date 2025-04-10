@@ -6,9 +6,9 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 add_subdirectory(includes/SDL EXCLUDE_FROM_ALL)
 
-install(TARGETS SDL3 DESTINATION lib)
+#install(TARGETS SDL3 DESTINATION lib)
 
-add_executable(Voxel_Editor src/main.cxx)
+add_executable(Voxel_Editor src/editor.cxx)
 
 target_link_libraries(Voxel_Editor PRIVATE SDL3::SDL3)
 
