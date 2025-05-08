@@ -2,6 +2,9 @@
 #include "SDL3/SDL_render.h"
 #include <iostream>
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_opengl.h>
+
+
 int main()
 {
 
@@ -15,36 +18,11 @@ int main()
     return 1;
   }
 
-  SDL_Renderer* ren = SDL_CreateRenderer(win, NULL);
-  if(ren == nullptr)
-  {
-    std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
-    SDL_DestroyWindow(win);
-    return 1;
-  }
+  SDL_GLContext glContext = SDL_GL_CreateContext(win);
 
-  SDL_Surface* bmp = SDL_LoadBMP("Lettuce.bmp");
-  if(bmp == nullptr)
-  {
-    std::cerr << "SDL_LoadBMP Error: " << SDL_GetError() << std::endl;
-    SDL_DestroyRenderer(ren);
-    SDL_DestroyWindow(win);
-    SDL_Quit();
-    return 1;
-  }
-
-  SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, bmp);
-  SDL_DestroySurface(bmp);
-
-  if(tex == nullptr)
-  {
-    std::cerr << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-    SDL_DestroyRenderer(ren);
-    SDL_DestroyWindow(win);
-    SDL_Quit();
-    return 1;
-
-  }
+  glClearColor(0,0,0,1);
+  glClear(GL_COLOR_BUFFER_BIT);
+  SDL_GL_SwapWindow(win);
 
   SDL_Event e;
   bool quit = false;

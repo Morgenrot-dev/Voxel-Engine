@@ -1,3 +1,6 @@
 [submodule "includes/SDL"]
 	path = includes/SDL
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "includes/Third-Party/glew"]
+	path = includes/Third-Party/glew
+	url = git@github.com:nigels-com/glew.git
