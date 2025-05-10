@@ -6,9 +6,19 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 add_subdirectory(includes/SDL EXCLUDE_FROM_ALL)
 
-add_subdirectory(includes/Third-Party/glew/build/cmake)
-
 find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
+
+include_directories(${OPENGL_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR})
+
+set(GLAD_SOURCES 
+  lib/glad/src/glad.c) 
+
+set(GLAD_INCLUDES 
+  includes/Third-Party
+  )
+
+include_directories(${GLAD_INCLUDES})
 
 #include_directories( ${OPENGL_INCLUDE_DIRS})
 
@@ -16,15 +26,9 @@ find_package(OpenGL REQUIRED)
 
 #install(TARGETS SDL3 DESTINATION lib)
 
-add_executable(Voxel_Editor src/editor.cxx)
-
-target_include_directories(Voxel_Editor PRIVATE includes/Third-Party/glew/auto/src)
+add_executable(Voxel_Editor src/editor.cxx ${GLAD_SOURCES})
 
 #target_link_libraries(Voxel_Editor ${OPENGL_gl_LIBRARY})
 
-if(WIN32)
-  target_compile_definition(Voxel_Editor PRIVATE GLEW)
-endif()
-
-target_link_libraries(Voxel_Editor PRIVATE SDL3::SDL3 libglew_shared)
+target_link_libraries(Voxel_Editor PRIVATE SDL3::SDL3 ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 
