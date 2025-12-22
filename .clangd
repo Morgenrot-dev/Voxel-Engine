@@ -1,0 +1,9 @@
+Diagnostics:
+  UnusedIncludes: false
+
+CompileFlags:
+  Add: [-std=c++17]
+  - "I./lib/glad/src"
+  - "I./includes/SDL/include"
+  Remove: 
+    - "-I/home/shottyman/Documents/Programming_Projects/Voxel-Engine/build/includes/SDL/include-revision" # Remove problematic path
