@@ -1,4 +1,4 @@
-#include "../../includes/renderer/shaders.hpp"
+#include "../../includes/renderer/shaders/shaders.hpp"
 #include <glad/glad.h>
 
 GLenum glCheckError_(const char *file, int line)

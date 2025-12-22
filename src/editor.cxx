@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <iostream>
 #include <SDL3/SDL.h>
-#include "../includes/renderer/shaders.hpp"
+#include "../includes/renderer/shaders/shaders.hpp"
 #include <stb/stb_image.h>
 //#include <GL/glu.h>
 #include <cmath>
