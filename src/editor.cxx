@@ -1,4 +1,5 @@
 #include <glad/glad.h>
+#define STB_IMAGE_IMPLEMENTATION
 #include "SDL3/SDL_error.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_render.h"
@@ -8,6 +9,8 @@
 #include <cstddef>
 #include <iostream>
 #include <SDL3/SDL.h>
+#include "../includes/renderer/shaders.hpp"
+#include <stb/stb_image.h>
 //#include <GL/glu.h>
 #include <cmath>
 
@@ -37,10 +40,6 @@ int main()
 
   int result = gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress);
 
-  int nrAttributes;
-  glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-  std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
-
   if(!result)
   {
     std::cout << "Failed to initialize GLAD" << std::endl;
@@ -50,12 +49,19 @@ int main()
   }
 
   float vertices[] = {
-     0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // top right
-     -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
-    0.0f, 0.5f, 0.0f,  0.0, 0.0f, 1.0f// bottom left 
-  };
+    // positions          // colors           // texture coords
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+}; 
 
-  
+  unsigned int indices[] = {
+    0, 1, 3,
+    1, 2, 3
+  };
+  unsigned int EBO;
+  glGenBuffers(1, &EBO);
   
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
@@ -70,7 +76,55 @@ int main()
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0); 
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
+  glEnableVertexAttribArray(2);
+
+  ShaderProgram current("resources/shader.vs", "resources/shader.fs");
+  int width, height, nrChannels;
+  unsigned char* data = stbi_load("resources/container.jpg", &width, &height, &nrChannels, 0);
+  glActiveTexture(GL_TEXTURE0);
+  unsigned int textureID;
+  if(data){
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+      }
+  else 
+  {
+    std::cerr << "Failed to load texture" << std::endl;
+    return -1;
+  }
+  stbi_image_free(data);
+  unsigned int smileTextID;
+  stbi_set_flip_vertically_on_load(true);
+  data = stbi_load("resources/awesomeface.png", &width, &height, &nrChannels, 0);
+
+  glActiveTexture(GL_TEXTURE1);
+  if(data)
+  {
+    glGenTextures(1, &smileTextID);
+    glBindTexture(GL_TEXTURE_2D, smileTextID); 
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+  }
+  else {
+    std::cerr << "Failed to load texture" << std::endl;
+    return -1;
+  }
+  /*
   //GPU program in charge of the pixel positions
   const char * vertexShaderSource = "#version 450 core\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -124,6 +178,7 @@ glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
   
   
 
+
   unsigned int shaderProgram;
   shaderProgram = glCreateProgram();
 
@@ -133,14 +188,11 @@ glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
+  */
 
   //Sets the attributes of the vertex data
   //Meaning how the program should interpret the vertex values inputed
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0); 
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
-  glEnableVertexAttribArray(1);
-
+  /*
   {
     int success;
     char infoLog[512];
@@ -151,21 +203,23 @@ glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
       std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILURE" << infoLog << std::endl;
     }
   }
-
+  */
   
   //The next part of the lesson is learn about Vertex Array Objects (VAOs)
   //The problem they solve is the cumbersome nature of binding configuring and executing 
   //VBO data. Instead utilizing the VAO we can save the states of the VBOs and reuse them 
-  //at a later date or set them all up at once to use later. 
+  //at a later date or set them all up at once to use later.   
   
-
-
   
 
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-  glUseProgram(shaderProgram);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  current.use();
+  current.setUniformInteger("ourTexture", 0);
+  current.setUniformInteger("ourTexture1", 1);
+  //glUseProgram(shaderProgram);
   glClear(GL_COLOR_BUFFER_BIT);
-  glDrawArrays(GL_TRIANGLES, 0, 3);
   SDL_GL_SetSwapInterval(-1);
   SDL_GL_SwapWindow(win);
   
@@ -174,7 +228,8 @@ glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 
   while(!quit){
     
-    glUseProgram(shaderProgram);
+    current.use();
+    //glUseProgram(shaderProgram);
     int winWidth = 0, winHeight = 0;
     SDL_GetWindowSize(win, &winWidth, &winHeight );
     glViewport(0, 0, winWidth , winHeight);
@@ -218,7 +273,7 @@ glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 
     glBindVertexArray(VAO);
     glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     SDL_GL_SwapWindow(win);
     SDL_Delay(1);
 
