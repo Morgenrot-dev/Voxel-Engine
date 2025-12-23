@@ -1,4 +1,6 @@
-#include <GLES2/gl2.h>
+#include "SDL3/SDL_keyboard.h"
+#include "SDL3/SDL_keycode.h"
+#include "SDL3/SDL_scancode.h"
 #include <glad/glad.h>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -21,7 +23,8 @@
 #include <stb/stb_image.h>
 //#include <GL/glu.h>
 #include <cmath>
-
+//One ought to remember about c++ scripting through the use of dll/so loading
+//
 int main()
 {
 
@@ -216,6 +219,11 @@ int main()
 
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE , glm::value_ptr(projection));
+  glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+  glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+  glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+
+  const float cameraSpeed = 0.05f;
   //glUseProgram(shaderProgram);
   glEnable(GL_DEPTH_TEST);
   
@@ -233,6 +241,27 @@ int main()
     SDL_GetWindowSize(win, &winWidth, &winHeight );
     glViewport(0, 0, winWidth , winHeight);
     glClearColor(1,0,0,1);
+    
+    const bool* keystate = SDL_GetKeyboardState(NULL);
+    if(keystate != NULL)
+    {
+      if(keystate[SDL_SCANCODE_W])
+      {
+        cameraPos += cameraSpeed * cameraFront;
+      }
+      if(keystate[SDL_SCANCODE_S])
+      {
+        cameraPos -= cameraSpeed * cameraFront;
+      }
+      if(keystate[SDL_SCANCODE_A])
+      {
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+      }
+      if(keystate[SDL_SCANCODE_D])
+      {
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+      }
+    }
 
     while(SDL_PollEvent(&e)){
       if(e.type == SDL_EVENT_QUIT){
@@ -274,9 +303,9 @@ int main()
     glBindVertexArray(VAO);
     SDL_GL_SwapWindow(win);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     float camX = sin((float)SDL_GetTicks()/1000) * radius;
-    float camY = cos((float)SDL_GetTicks()/1000) * radius;
-    view = glm::lookAt(glm::vec3(camX, 0, camY), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+    float camY = cos((float)SDL_GetTicks()/1000) * radius;      
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE , glm::value_ptr(view));
     for(int i = 0; i < 10; i++){
     glm::mat4 new_model = glm::mat4(1.0f);
