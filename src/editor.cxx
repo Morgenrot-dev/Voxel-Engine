@@ -1,6 +1,8 @@
 #include <GLES2/gl2.h>
 #include <glad/glad.h>
 #include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/fwd.hpp>
 #include <glm/trigonometric.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include "SDL3/SDL_error.h"
@@ -65,12 +67,7 @@ int main()
   glm::mat4 projection;
   projection = glm::perspective(glm::radians(45.0f), 640.0f/480.0f , 0.1f , 100.0f);
   
-  glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-  glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-  glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-  glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-  glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-  glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
+  view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f ), glm::vec3(0.0f, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f));
 
   float vertices[] = {
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -215,9 +212,10 @@ int main()
 
   int projectionLoc = glGetUniformLocation(current.getShaderProgramID(), "projection");
 
+  const float radius = 10.0f;
+
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-  glUniformMatrix4fv(viewLoc, 1, GL_FALSE , glm::value_ptr(view));
-  glUniformMatrix4fv(projectionLoc, 1, GL_FALSE , glm::value_ptr(projection));
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE , glm::value_ptr(projection));
   //glUseProgram(shaderProgram);
   glEnable(GL_DEPTH_TEST);
   
@@ -272,11 +270,14 @@ int main()
       
 
     }
-
+    
     glBindVertexArray(VAO);
     SDL_GL_SwapWindow(win);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+    float camX = sin((float)SDL_GetTicks()/1000) * radius;
+    float camY = cos((float)SDL_GetTicks()/1000) * radius;
+    view = glm::lookAt(glm::vec3(camX, 0, camY), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE , glm::value_ptr(view));
     for(int i = 0; i < 10; i++){
     glm::mat4 new_model = glm::mat4(1.0f);
     new_model = glm::translate(new_model, cubePositions[i]);
