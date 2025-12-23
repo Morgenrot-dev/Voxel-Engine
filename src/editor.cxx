@@ -223,8 +223,7 @@ int main()
   glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
   glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 
-  const float cameraSpeed = 0.05f;
-  //glUseProgram(shaderProgram);
+    //glUseProgram(shaderProgram);
   glEnable(GL_DEPTH_TEST);
   
   SDL_GL_SetSwapInterval(-1);
@@ -232,7 +231,11 @@ int main()
   
   SDL_Event e;
   bool quit = false;
-  
+  double deltaTime = 0.0f;
+  double lastFrame = 0.0f;
+  double currentFrame = 0.0f;
+
+
   while(!quit){
     
     current.use();
@@ -241,7 +244,14 @@ int main()
     SDL_GetWindowSize(win, &winWidth, &winHeight );
     glViewport(0, 0, winWidth , winHeight);
     glClearColor(1,0,0,1);
-    
+    currentFrame = SDL_GetPerformanceCounter(); 
+
+    deltaTime = (double)(currentFrame - lastFrame) / (double) SDL_GetPerformanceFrequency();
+
+    lastFrame = currentFrame;
+  
+    float cameraSpeed = 2.5f * deltaTime;
+
     const bool* keystate = SDL_GetKeyboardState(NULL);
     if(keystate != NULL)
     {
@@ -255,6 +265,7 @@ int main()
       }
       if(keystate[SDL_SCANCODE_A])
       {
+        
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
       }
       if(keystate[SDL_SCANCODE_D])
@@ -315,8 +326,10 @@ int main()
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(new_model));
     glDrawArrays(GL_TRIANGLES, 0, 36); 
     }
+    
+    
     SDL_Delay(16);
-
+    
   }
 
   glDeleteVertexArrays(1, &VAO);
