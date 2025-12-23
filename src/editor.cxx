@@ -1,5 +1,7 @@
 #include <GLES2/gl2.h>
 #include <glad/glad.h>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/trigonometric.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include "SDL3/SDL_error.h"
 #include "SDL3/SDL_events.h"
@@ -52,9 +54,16 @@ int main()
     return -1;
   }
 
-  glm::mat4 trans = glm::mat4(1.0f);
-  trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-  trans = glm::rotate(trans, (float)SDL_GetTicks()/1000, glm::vec3(0.0f, 0.0f, 1.0f));
+  
+
+  glm::mat4 model = glm::mat4(1.0f);
+  model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+  glm::mat4 view = glm::mat4(1.0f);
+  view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+  glm::mat4 projection;
+  projection = glm::perspective(glm::radians(45.0f), 640.0f/480.0f , 0.1f , 100.0f);
 
   float vertices[] = {
     // positions          // colors           // texture coords
@@ -138,7 +147,7 @@ int main()
   //VBO data. Instead utilizing the VAO we can save the states of the VBOs and reuse them 
   //at a later date or set them all up at once to use later.   
  
-  unsigned int transformLoc = glGetUniformLocation(current.getShaderProgramID(), "transform");
+
   
 
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -147,7 +156,15 @@ int main()
   current.use(); 
   current.setUniformInteger("ourTexture", 0);
   current.setUniformInteger("ourTexture1", 1);
-  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+  int modelLoc = glGetUniformLocation(current.getShaderProgramID(), "model");
+  
+  int viewLoc = glGetUniformLocation(current.getShaderProgramID(), "view");
+
+  int projectionLoc = glGetUniformLocation(current.getShaderProgramID(), "projection");
+
+  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+  glUniformMatrix4fv(viewLoc, 1, GL_FALSE , glm::value_ptr(view));
+  glUniformMatrix4fv(projectionLoc, 1, GL_FALSE , glm::value_ptr(projection));
   //glUseProgram(shaderProgram);
   glClear(GL_COLOR_BUFFER_BIT);
   SDL_GL_SetSwapInterval(-1);
@@ -157,10 +174,7 @@ int main()
   bool quit = false;
 
   while(!quit){
-    trans = glm::mat4(1.0f);
-    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-    trans = glm::rotate(trans, (float)SDL_GetTicks()/1000, glm::vec3(0.0f, 0.0f, 1.0f));
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+    
     current.use();
     //glUseProgram(shaderProgram);
     int winWidth = 0, winHeight = 0;
@@ -212,6 +226,9 @@ int main()
     SDL_Delay(1);
 
   }
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteBuffers(1, &VBO);
+  glDeleteBuffers(1, &EBO);
   SDL_GL_UnloadLibrary();
   SDL_GL_DestroyContext(glContext);
   SDL_DestroyWindow(win);
