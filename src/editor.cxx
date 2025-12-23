@@ -1,3 +1,4 @@
+#include <GLES2/gl2.h>
 #include <glad/glad.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include "SDL3/SDL_error.h"
@@ -50,6 +51,10 @@ int main()
     SDL_Quit();
     return -1;
   }
+
+  glm::mat4 trans = glm::mat4(1.0f);
+  trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0,0.0, 1.0));
+  trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
 
   float vertices[] = {
     // positions          // colors           // texture coords
@@ -212,7 +217,8 @@ glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
   //The problem they solve is the cumbersome nature of binding configuring and executing 
   //VBO data. Instead utilizing the VAO we can save the states of the VBOs and reuse them 
   //at a later date or set them all up at once to use later.   
-  
+ 
+  unsigned int transformLoc = glGetUniformLocation(current.getShaderProgramID(), "transform");
   
 
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -221,6 +227,7 @@ glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
   current.use();
   current.setUniformInteger("ourTexture", 0);
   current.setUniformInteger("ourTexture1", 1);
+  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
   //glUseProgram(shaderProgram);
   glClear(GL_COLOR_BUFFER_BIT);
   SDL_GL_SetSwapInterval(-1);
