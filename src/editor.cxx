@@ -10,6 +10,9 @@
 #include <iostream>
 #include <SDL3/SDL.h>
 #include "../includes/renderer/shaders/shaders.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <stb/stb_image.h>
 //#include <GL/glu.h>
 #include <cmath>
