@@ -108,11 +108,23 @@ int main()
     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
-
+  glm::vec3 cubePositions[] = {
+    glm::vec3( 0.0f,  0.0f,  0.0f), 
+    glm::vec3( 2.0f,  5.0f, -15.0f), 
+    glm::vec3(-1.5f, -2.2f, -2.5f),  
+    glm::vec3(-3.8f, -2.0f, -12.3f),  
+    glm::vec3( 2.4f, -0.4f, -3.5f),  
+    glm::vec3(-1.7f,  3.0f, -7.5f),  
+    glm::vec3( 1.3f, -2.0f, -2.5f),  
+    glm::vec3( 1.5f,  2.0f, -2.5f), 
+    glm::vec3( 1.5f,  0.2f, -1.5f), 
+    glm::vec3(-1.3f,  1.0f, -1.5f)  
+  };
   unsigned int indices[] = {
     0, 1, 3,
     1, 2, 3
   };
+
   unsigned int EBO;
   glGenBuffers(1, &EBO);
   
@@ -209,7 +221,7 @@ int main()
   bool quit = false;
   
   while(!quit){
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+    
     current.use();
     //glUseProgram(shaderProgram);
     int winWidth = 0, winHeight = 0;
@@ -255,16 +267,21 @@ int main()
     }
 
     glBindVertexArray(VAO);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
     SDL_GL_SwapWindow(win);
-    float rotation = (double)SDL_GetTicks()/1000.0f * glm::radians(50.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    glm::mat4 new_model = glm::rotate(model, rotation, glm::vec3(0.5f, 1.0f, 0.0f));
+    for(int i = 0; i < 10; i++){
+    glm::mat4 new_model = glm::mat4(1.0f);
+    new_model = glm::translate(new_model, cubePositions[i]);
+    float angle = 20.0f * i;
+    new_model = glm::rotate(new_model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(new_model));
+    glDrawArrays(GL_TRIANGLES, 0, 36); 
+    }
     SDL_Delay(16);
 
   }
+
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
