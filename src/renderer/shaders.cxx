@@ -35,7 +35,6 @@ VertexShader::VertexShader(const std::string &fileDirectory)
   getcwd(tempbuff, 512); 
   std::string tempbuffstr(tempbuff);
   std::string newfileDirectory = tempbuffstr + "/" + fileDirectory;
-  std::cout << newfileDirectory << std::endl;
   std::ifstream vertexShaderFile(newfileDirectory);
 
   if(!vertexShaderFile.is_open()){
@@ -108,7 +107,6 @@ FragmentShader::FragmentShader(const std::string &fileDirectory)
   getcwd(tempbuff, 512);
   std::string tempbuffstr(tempbuff);
   std::string newfileDirectory = tempbuffstr + "/" + fileDirectory;
-  std::cout << newfileDirectory << std::endl;
   std::ifstream fragmentShaderFile(newfileDirectory);
 
   if(!fragmentShaderFile.is_open())
