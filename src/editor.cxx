@@ -1,5 +1,6 @@
 #include "SDL3/SDL_keyboard.h"
 #include "SDL3/SDL_keycode.h"
+#include "SDL3/SDL_oldnames.h"
 #include "SDL3/SDL_scancode.h"
 #include <glad/glad.h>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -24,7 +25,7 @@
 //#include <GL/glu.h>
 #include <cmath>
 //One ought to remember about c++ scripting through the use of dll/so loading
-//
+
 int main()
 {
 
@@ -234,7 +235,11 @@ int main()
   double deltaTime = 0.0f;
   double lastFrame = 0.0f;
   double currentFrame = 0.0f;
-
+  
+  float yaw = 0;
+  float pitch = -90.0f;
+  const float sensitivity = 0.05f;
+  SDL_SetWindowRelativeMouseMode(win, true);
 
   while(!quit){
     
@@ -281,7 +286,8 @@ int main()
       
       
       
-      
+      float xoffset = 0.0f;
+      float yoffset = 0.0f;
 
       switch(e.type)
       
@@ -297,8 +303,24 @@ int main()
           {
             quit = true;
           }
-          
+        break;
+        case SDL_EVENT_MOUSE_MOTION:
+          xoffset = e.motion.xrel;
+          yoffset = -e.motion.yrel;
+          xoffset *= sensitivity;
+          yoffset *= sensitivity;
 
+          yaw += xoffset;
+          pitch += yoffset;
+
+          if(pitch > 89.0f)
+            pitch = 89.0f;
+          if(pitch < -89.0f)
+            pitch = -89.0f;
+
+          std::cout << xoffset << '\n' << yoffset << '\n' << yaw << '\n' << pitch << '\n' << std::endl;
+
+  
           break;
     
         default:
@@ -314,9 +336,7 @@ int main()
     glBindVertexArray(VAO);
     SDL_GL_SwapWindow(win);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-    float camX = sin((float)SDL_GetTicks()/1000) * radius;
-    float camY = cos((float)SDL_GetTicks()/1000) * radius;      
+    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);     
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE , glm::value_ptr(view));
     for(int i = 0; i < 10; i++){
     glm::mat4 new_model = glm::mat4(1.0f);
@@ -326,6 +346,12 @@ int main()
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(new_model));
     glDrawArrays(GL_TRIANGLES, 0, 36); 
     }
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+    cameraFront = glm::normalize(direction);
     
     
     SDL_Delay(16);
