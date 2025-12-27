@@ -316,9 +316,7 @@ int main()
           if(pitch > 89.0f)
             pitch = 89.0f;
           if(pitch < -89.0f)
-            pitch = -89.0f;
-
-          std::cout << xoffset << '\n' << yoffset << '\n' << yaw << '\n' << pitch << '\n' << std::endl;
+            pitch = -89.0f; 
 
   
           break;
