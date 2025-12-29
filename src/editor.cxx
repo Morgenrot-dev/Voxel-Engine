@@ -6,6 +6,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
 #include <glm/trigonometric.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include "SDL3/SDL_error.h"
@@ -18,6 +19,7 @@
 #include <iostream>
 #include <SDL3/SDL.h>
 #include "../includes/renderer/shaders/shaders.hpp"
+#include "../includes/renderer/camera/camera.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -31,7 +33,7 @@ int main()
 
   if(SDL_Init(SDL_INIT_VIDEO) < 0)
   {
-    std::cerr << "SDL_Init failed to initialize: " << SDL_GetError() << std::endl;
+  std::cerr << "SDL_Init failed to initialize: " << SDL_GetError() << std::endl;
   }
 
   SDL_GL_LoadLibrary(NULL);
@@ -223,6 +225,9 @@ int main()
   glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
   glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
   glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+  
+  Camera mainCamera(cameraPos, cameraFront, cameraUp);
+  
 
     //glUseProgram(shaderProgram);
   glEnable(GL_DEPTH_TEST);
@@ -255,27 +260,28 @@ int main()
 
     lastFrame = currentFrame;
   
-    float cameraSpeed = 2.5f * deltaTime;
+    
 
     const bool* keystate = SDL_GetKeyboardState(NULL);
     if(keystate != NULL)
     {
+      cameraFront = mainCamera.getLookat();
       if(keystate[SDL_SCANCODE_W])
       {
-        cameraPos += cameraSpeed * cameraFront;
+        mainCamera.moveCamera(cameraFront, deltaTime);
       }
       if(keystate[SDL_SCANCODE_S])
       {
-        cameraPos -= cameraSpeed * cameraFront;
+        mainCamera.moveCamera(-cameraFront, deltaTime);
       }
       if(keystate[SDL_SCANCODE_A])
       {
         
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        mainCamera.moveCamera(-glm::normalize(glm::cross(cameraFront, cameraUp)), deltaTime);
       }
       if(keystate[SDL_SCANCODE_D])
       {
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+         mainCamera.moveCamera(glm::normalize(glm::cross(cameraFront, cameraUp)), deltaTime);
       }
     }
 
@@ -334,7 +340,7 @@ int main()
     glBindVertexArray(VAO);
     SDL_GL_SwapWindow(win);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);     
+    view = mainCamera.getTransformationMatrix();    
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE , glm::value_ptr(view));
     for(int i = 0; i < 10; i++){
     glm::mat4 new_model = glm::mat4(1.0f);
@@ -344,13 +350,7 @@ int main()
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(new_model));
     glDrawArrays(GL_TRIANGLES, 0, 36); 
     }
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-    cameraFront = glm::normalize(direction);
-    
+    mainCamera.setLookat(pitch, yaw);
     
     SDL_Delay(16);
     

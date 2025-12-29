@@ -27,7 +27,7 @@ include_directories(Voxel_Editor PRIVATE ${GLAD_INCLUDES} ${OPENGL_INCLUDE_DIRS}
 
 #install(TARGETS SDL3 DESTINATION lib)
 
-add_executable(Voxel_Editor src/editor.cxx src/renderer/shaders.cxx ${GLAD_SOURCES})
+add_executable(Voxel_Editor src/editor.cxx src/renderer/shaders.cxx src/renderer/camera.cxx ${GLAD_SOURCES})
 
 #target_link_libraries(Voxel_Editor ${OPENGL_gl_LIBRARY})
 
