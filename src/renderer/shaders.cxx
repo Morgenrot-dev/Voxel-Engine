@@ -1,5 +1,6 @@
 #include "../../includes/renderer/shaders/shaders.hpp"
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
 GLenum glCheckError_(const char *file, int line)
 {
@@ -224,6 +225,11 @@ void ShaderProgram::setUniformInteger(const std::string& uniformName, int value)
 void ShaderProgram::setUniformFloat(const std::string& uniformName, float value) const
 {
   glUniform1f(glGetUniformLocation(shaderProgramID, uniformName.c_str()), value);
+}
+
+void ShaderProgram::setUniformVec3(const std::string& uniformName, glm::vec3 vector)
+{
+  glUniform3fv(glGetUniformLocation(shaderProgramID, uniformName.c_str()), 1, glm::value_ptr(vector));
 }
 
 ShaderProgram::~ShaderProgram()

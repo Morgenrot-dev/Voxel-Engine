@@ -159,7 +159,7 @@ int main()
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
   glEnableVertexAttribArray(1);
   
-  ShaderProgram current("resources/shader.vs", "resources/shader.fs");
+  ShaderProgram current("resources/shadervs.glsl", "resources/shaderfs.glsl");
   int width, height, nrChannels;
   unsigned char* data = stbi_load("resources/container.jpg", &width, &height, &nrChannels, 0);
   glActiveTexture(GL_TEXTURE0);
@@ -222,6 +222,7 @@ int main()
 
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE , glm::value_ptr(projection));
+  current.setUniformVec3("lightColor", glm::vec3(1.0f, 0.5f, 0.7f));
   glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
   glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
   glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
