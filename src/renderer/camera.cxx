@@ -46,6 +46,11 @@ void Camera::setLookat(float pitch, float yaw)
 
 }
 
+vec3 Camera::getPosition()
+{
+  return this->position;
+}
+
 vec3 Camera::getLookat()
 {
   return this->lookat;

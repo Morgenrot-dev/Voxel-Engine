@@ -11,6 +11,7 @@ public:
   void setLookat(vec3 lookat);
   void setLookat(float pitch, float yaw);
   vec3 getLookat();
+  vec3 getPosition();
   float getSpeed();
 private:
   float speed = 1.0f;
