@@ -359,9 +359,14 @@ int main()
     SDL_GL_SwapWindow(win);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     view = mainCamera.getTransformationMatrix();
-    current.setUniformVec3("lightPos", vec3(0.0f, 10.0f, 0.0f));
-    current.setUniformVec3("lightColor", vec3(1.0f, 1.0f, 1.0f));
+    current.setUniformVec3("light.position", vec3(0.0f, 10.0f, 0.0f));
+    current.setUniformVec3("light.ambient", vec3(0.2f, 0.2f, 0.2f));
+    current.setUniformVec3("light.diffuse", vec3(0.5f, 0.5f, 0.5f));
+    current.setUniformVec3("light.specular", vec3(1.0f, 1.0f, 1.0f));
     current.setUniformVec3("viewPos", mainCamera.getPosition());
+    current.setUniformInteger("materialMap.diffuse", 0);
+    current.setUniformInteger("materialMap.specular", 1);
+    current.setUniformFloat("materialMap.shininess", 32.0f);
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE , glm::value_ptr(view));
     for(int i = 0; i < 10; i++){
     glm::mat4 new_model = glm::mat4(1.0f);
