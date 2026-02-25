@@ -231,13 +231,13 @@ void ShaderProgram::setUniformFloat(const std::string& uniformName, float value)
 void ShaderProgram::setUniformVec3(const std::string& uniformName, glm::vec3 vector) const
 {
   glUniform3fv(glGetUniformLocation(shaderProgramID, uniformName.c_str()), 1, glm::value_ptr(vector));
-  glCheckError();
+  //glCheckError();
 }
 
 void ShaderProgram::setUniformMat3(const std::string& uniformName, glm::mat3 matrix) const
 {
   glUniformMatrix3fv(glGetUniformLocation(shaderProgramID, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
-  glCheckError();
+  //glCheckError();
 }
 
 void ShaderProgram::setUniformMat4(const std::string& uniformName, glm::mat4 matrix) const

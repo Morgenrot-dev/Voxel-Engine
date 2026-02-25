@@ -359,10 +359,14 @@ int main()
     SDL_GL_SwapWindow(win);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     view = mainCamera.getTransformationMatrix();
-    current.setUniformVec3("light.position", vec3(0.0f, 10.0f, 0.0f));
-    current.setUniformVec3("light.ambient", vec3(0.2f, 0.2f, 0.2f));
-    current.setUniformVec3("light.diffuse", vec3(0.5f, 0.5f, 0.5f));
-    current.setUniformVec3("light.specular", vec3(1.0f, 1.0f, 1.0f));
+    //current.setUniformVec3("light.position", vec3(0.0f, 10.0f, 0.0f));
+    //current.setUniformVec3("light.ambient", vec3(0.2f, 0.2f, 0.2f));
+    //current.setUniformVec3("light.diffuse", vec3(0.5f, 0.5f, 0.5f));
+    //current.setUniformVec3("light.specular", vec3(1.0f, 1.0f, 1.0f));
+    current.setUniformVec3("GlobalLight.direction", vec3(-0.2f, -1.0f, -0.3f));
+    current.setUniformVec3("GlobalLight.ambient", vec3(0.2f, 0.2f, 0.2f));
+    current.setUniformVec3("GlobalLight.diffuse", vec3(0.5f, 0.5f, 0.5f));
+    current.setUniformVec3("GlobalLight.specular", vec3(1.0f, 1.0f, 1.0f));
     current.setUniformVec3("viewPos", mainCamera.getPosition());
     current.setUniformInteger("materialMap.diffuse", 0);
     current.setUniformInteger("materialMap.specular", 1);

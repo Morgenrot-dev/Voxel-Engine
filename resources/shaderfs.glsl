@@ -24,13 +24,32 @@ struct Light {
   vec3 specular;
 };
 
+struct DirectionalLight {
+  vec3 direction;
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
+};
+
+struct PointLight {
+  vec3 position;
+  
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 spcular;
+  
+  float constant;
+  float linear;
+  float quadratic;+
+}
+
 struct DiffuseResult {
   vec3 diffuseColor;
   float diff;
 };
 
 uniform Material material;
-uniform Light light;
+uniform DirectionalLight GlobalLight;
 
 uniform MaterialMap materialMap;
 
@@ -60,21 +79,22 @@ void main()
 {
   vec3 norm = normalize(Normal);
   vec3 viewDir = normalize(viewPos - FragPos);
-  vec3 lightDir = normalize(light.position - FragPos);
-  vec3 reflectDir = reflect(-lightDir, norm);
- 
+  //vec3 lightDir = normalize(light.position - FragPos);
+  //vec3 reflectDir = reflect(-lightDir, norm);
+  vec3 lightGlobalDir = normalize(-GlobalLight.direction);
+  vec3 reflectGlobalDir = reflect(-lightGlobalDir, norm);
   vec4 diffuseTex = texture(materialMap.diffuse, TexCoord);
   vec4 specularTex = texture(materialMap.specular, TexCoord);
 
   DiffuseResult result;
-  result = diffuse_calculation(norm, lightDir, light.diffuse, vec3(diffuseTex));
+  result = diffuse_calculation(norm, lightGlobalDir, GlobalLight.diffuse, vec3(diffuseTex));
   vec3 specular_value = vec3(0,0,0);
   if(result.diff > 0.0)
   {
-    specular_value = specular_calculation(viewDir, reflectDir, materialMap.shininess, vec3(specularTex), light.specular);
+    specular_value = specular_calculation(viewDir, reflectGlobalDir, materialMap.shininess, vec3(specularTex), GlobalLight.specular);
   }
   vec4 textureMix = mix(diffuseTex, specularTex, 0.2);
-  vec3 ambient = ambient_calculation(light.ambient, vec3(textureMix));
+  vec3 ambient = ambient_calculation(GlobalLight.ambient, vec3(textureMix));
   vec3 result_color = ambient + result.diffuseColor + specular_value;
   //vec3 result = vec3(mix(texture(ourTexture, TexCoord), texture(ourTexture1, TexCoord), 0.2)) * (ambient + diffuse + specular);
   FragColor = vec4(result_color, 1.0);
