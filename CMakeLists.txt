@@ -9,7 +9,6 @@ add_subdirectory(includes/SDL EXCLUDE_FROM_ALL)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
 find_package(glm REQUIRED)
 
 set(GLAD_SOURCES 

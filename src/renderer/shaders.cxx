@@ -1,5 +1,7 @@
 #include "../../includes/renderer/shaders/shaders.hpp"
+
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
 GLenum glCheckError_(const char *file, int line)
 {
@@ -67,7 +69,7 @@ VertexShader::VertexShader(const std::string &fileDirectory)
     if(!success)
     {
       glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
-      std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+      std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << fileDirectory << '\n' << infoLog << std::endl;
     }
   } 
     
@@ -140,7 +142,7 @@ FragmentShader::FragmentShader(const std::string &fileDirectory)
     if(!success)
     {
       glGetShaderInfoLog(fragmentShaderID, 512, NULL, infoLog);
-      std::cout << "ERROR::SHADER::Fragment::COMPILATION_FAILED\n" << infoLog << std::endl;
+      std::cout << "ERROR::SHADER::Fragment::COMPILATION_FAILED\n" << fileDirectory << '\n' <<  infoLog << std::endl;
     }
   } 
 
@@ -224,6 +226,24 @@ void ShaderProgram::setUniformInteger(const std::string& uniformName, int value)
 void ShaderProgram::setUniformFloat(const std::string& uniformName, float value) const
 {
   glUniform1f(glGetUniformLocation(shaderProgramID, uniformName.c_str()), value);
+}
+
+void ShaderProgram::setUniformVec3(const std::string& uniformName, glm::vec3 vector) const
+{
+  glUniform3fv(glGetUniformLocation(shaderProgramID, uniformName.c_str()), 1, glm::value_ptr(vector));
+  //glCheckError();
+}
+
+void ShaderProgram::setUniformMat3(const std::string& uniformName, glm::mat3 matrix) const
+{
+  glUniformMatrix3fv(glGetUniformLocation(shaderProgramID, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
+  //glCheckError();
+}
+
+void ShaderProgram::setUniformMat4(const std::string& uniformName, glm::mat4 matrix) const
+{
+  glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
+  glCheckError();
 }
 
 ShaderProgram::~ShaderProgram()

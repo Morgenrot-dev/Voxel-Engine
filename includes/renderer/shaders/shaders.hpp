@@ -13,6 +13,8 @@
 #include <string>
 #include <glad/glad.h>
 #include <unistd.h>
+#include <glm/glm.hpp>
+
 class VertexShader 
 {
   public:
@@ -55,6 +57,9 @@ class ShaderProgram
   void setUniformBool(const std::string& uniformName, bool inputBool) const;
   void setUniformInteger(const std::string& uniformName, int inputInteger) const;
   void setUniformFloat(const std::string& uniformName, float inputFloat) const;
+  void setUniformVec3(const std::string& uniformName, glm::vec3 vector) const;
+  void setUniformMat3(const std::string& uniformName, glm::mat3 matrix) const;
+  void setUniformMat4(const std::string& uniformName, glm::mat4 matrix) const;
   short getError() const;
   void use();
 

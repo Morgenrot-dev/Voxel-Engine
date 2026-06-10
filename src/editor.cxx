@@ -23,6 +23,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 #include <stb/stb_image.h>
 //#include <GL/glu.h>
 #include <cmath>
@@ -74,49 +76,48 @@ int main()
   projection = glm::perspective(glm::radians(45.0f), 640.0f/480.0f , 0.1f , 100.0f);
   
   view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f ), glm::vec3(0.0f, 0.0f, 0.0f ), glm::vec3(0.0f, 1.0f, 0.0f));
-
   float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
 
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f
 };
   glm::vec3 cubePositions[] = {
     glm::vec3( 0.0f,  0.0f,  0.0f), 
@@ -154,12 +155,14 @@ int main()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0); 
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
   glEnableVertexAttribArray(1);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5*sizeof(float)));
+  glEnableVertexAttribArray(2);
   
-  ShaderProgram current("resources/shader.vs", "resources/shader.fs");
+  ShaderProgram current("resources/shadervs.glsl", "resources/shaderfs.glsl");
   int width, height, nrChannels;
   unsigned char* data = stbi_load("resources/container.jpg", &width, &height, &nrChannels, 0);
   glActiveTexture(GL_TEXTURE0);
@@ -202,10 +205,19 @@ int main()
   //The problem they solve is the cumbersome nature of binding configuring and executing 
   //VBO data. Instead utilizing the VAO we can save the states of the VBOs and reuse them 
   //at a later date or set them all up at once to use later.   
- 
+  unsigned int lightVAO;
+
+
+  glGenVertexArrays(1, &lightVAO);
+  glBindVertexArray(lightVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0);
+  ShaderProgram lightProgram("resources/shadervs.glsl", "resources/lightfs.glsl");
 
   
-
+  glBindVertexArray(VAO);
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -222,11 +234,16 @@ int main()
 
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE , glm::value_ptr(projection));
+
+  current.setUniformVec3("lightColor", glm::vec3(1.0f, 0.5f, 0.7f));
   glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
   glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
   glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
   
   Camera mainCamera(cameraPos, cameraFront, cameraUp);
+  lightProgram.use();
+  glUniformMatrix4fv(glGetUniformLocation(lightProgram.getShaderProgramID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+  
   
 
     //glUseProgram(shaderProgram);
@@ -253,7 +270,7 @@ int main()
     int winWidth = 0, winHeight = 0;
     SDL_GetWindowSize(win, &winWidth, &winHeight );
     glViewport(0, 0, winWidth , winHeight);
-    glClearColor(1,0,0,1);
+    glClearColor(0.001f,0.001f,0.001f,1);
     currentFrame = SDL_GetPerformanceCounter(); 
 
     deltaTime = (double)(currentFrame - lastFrame) / (double) SDL_GetPerformanceFrequency();
@@ -338,9 +355,22 @@ int main()
     }
     
     glBindVertexArray(VAO);
+    current.use();
     SDL_GL_SwapWindow(win);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    view = mainCamera.getTransformationMatrix();    
+    view = mainCamera.getTransformationMatrix();
+    //current.setUniformVec3("light.position", vec3(0.0f, 10.0f, 0.0f));
+    //current.setUniformVec3("light.ambient", vec3(0.2f, 0.2f, 0.2f));
+    //current.setUniformVec3("light.diffuse", vec3(0.5f, 0.5f, 0.5f));
+    //current.setUniformVec3("light.specular", vec3(1.0f, 1.0f, 1.0f));
+    current.setUniformVec3("GlobalLight.direction", vec3(-0.2f, -1.0f, -0.3f));
+    current.setUniformVec3("GlobalLight.ambient", vec3(0.2f, 0.2f, 0.2f));
+    current.setUniformVec3("GlobalLight.diffuse", vec3(0.5f, 0.5f, 0.5f));
+    current.setUniformVec3("GlobalLight.specular", vec3(1.0f, 1.0f, 1.0f));
+    current.setUniformVec3("viewPos", mainCamera.getPosition());
+    current.setUniformInteger("materialMap.diffuse", 0);
+    current.setUniformInteger("materialMap.specular", 1);
+    current.setUniformFloat("materialMap.shininess", 32.0f);
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE , glm::value_ptr(view));
     for(int i = 0; i < 10; i++){
     glm::mat4 new_model = glm::mat4(1.0f);
@@ -348,8 +378,19 @@ int main()
     float angle = 20.0f * i;
     new_model = glm::rotate(new_model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(new_model));
+    glm::mat3 normal_model = glm::transpose(glm::inverse(glm::mat3(new_model))); 
+    current.setUniformMat3("normal_model", normal_model);
     glDrawArrays(GL_TRIANGLES, 0, 36); 
     }
+    
+    glBindVertexArray(lightVAO); 
+    lightProgram.use();
+    glm::mat4 new_model = glm::mat4(1.0f);
+    new_model = glm::translate(new_model, vec3(0.0f, 10.0f, 0.0f));
+    glUniformMatrix4fv(glGetUniformLocation(lightProgram.getShaderProgramID(), "view"), 1, GL_FALSE , glm::value_ptr(view));
+
+    glUniformMatrix4fv(glGetUniformLocation(lightProgram.getShaderProgramID(), "model"), 1, GL_FALSE, glm::value_ptr(new_model));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
     mainCamera.setLookat(pitch, yaw);
     
     SDL_Delay(16);
@@ -357,7 +398,8 @@ int main()
   }
 
   glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
+  glDeleteVertexArrays(1, &lightVAO);
+  glDeleteBuffers(1, &VBO); 
   glDeleteBuffers(1, &EBO);
   SDL_GL_UnloadLibrary();
   SDL_GL_DestroyContext(glContext);
