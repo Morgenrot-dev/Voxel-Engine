@@ -8,7 +8,7 @@ intended as the base for a voxel engine (chunked terrain rendering). See the
 
 <!-- Add a screenshot once you have one: -->
 <!-- ![Screenshot](docs/screenshot.png) -->
-> **Screenshot:** _add a capture of the running scene and embed it here._
+![Sample Image](/image/SampleImage.png)
 
 ## Overview
 
